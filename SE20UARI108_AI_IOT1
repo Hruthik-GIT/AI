@@ -1,0 +1,65 @@
+class Process:
+  def _init_(self, pid, arrival_time, burst_time, priority=0):
+    self.pid = pid
+    self.arrival_time = arrival_time
+    self.burst_time = burst_time
+    self.priority = priority
+    self.remaining_time = burst_time
+    self.turnaround_time = 0
+    self.waiting_time = 0
+
+def fcfs(processes):
+  processes.sort(key=lambda x: x.arrival_time)
+  current_time = 0
+  for process in processes:
+    if current_time < process.arrival_time:
+      current_time = process.arrival_time
+    process.waiting_time = current_time - process.arrival_time
+    process.turnaround_time = process.waiting_time + process.burst_time
+    current_time += process.burst_time
+
+def sjf(processes):
+  processes.sort(key=lambda x: (x.arrival_time, x.burst_time))
+  current_time = 0
+  for process in processes:
+    if current_time < process.arrival_time:
+      current_time = process.arrival_time
+    process.waiting_time = current_time - process.arrival_time
+    process.turnaround_time = process.waiting_time + process.burst_time
+    current_time += process.burst_time
+
+def round_robin(processes, time_quantum):
+  current_time = 0
+  queue = []
+  idx = 0
+  while True:
+    for process in processes:
+      if process.arrival_time <= current_time and process.remaining_time > 0:
+        queue.append(process)
+    if not queue:
+      break
+    process = queue.pop(0)
+    if process.remaining_time > time_quantum:
+      process.remaining_time -= time_quantum
+      current_time += time_quantum
+      queue.append(process)
+    else:
+      current_time += process.remaining_time
+      process.remaining_time = 0
+      process.waiting_time = current_time - process.arrival_time - process.burst_time
+      process.turnaround_time = process.waiting_time + process.burst_time
+
+def priority_scheduling(processes):
+  processes.sort(key=lambda x: (x.arrival_time, -x.priority))
+  current_time = 0
+  for process in processes:
+    if current_time < process.arrival_time:
+      current_time = process.arrival_time
+    process.waiting_time = current_time - process.arrival_time
+    process.turnaround_time = process.waiting_time + process.burst_time
+    current_time += process.burst_time
+
+def calculate_average_times(processes):
+  total_turnaround_time = sum(process.turnaround_time for process in processes)
+  total_waiting_time = sum(process.waiting_time for process in processes)
+  return total_turnaround
